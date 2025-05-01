@@ -13,6 +13,7 @@ import { Activity, Heart, Thermometer } from "lucide-react"
 import Link from "next/link"
 import MainNav from "@/components/main-nav"
 import { useAuth } from "@/lib/auth-provider"
+import axios from "axios"
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [isLoadingBPM, setIsLoadingBPM] = useState(false)
   const [isLoadingSPO2, setIsLoadingSPO2] = useState(false)
   const [isLoadingTemp, setIsLoadingTemp] = useState(false)
+  const gunhost = "192.168.147.238"
 
   // Mock API calls
   const fetchBPM = async () => {
@@ -31,7 +33,7 @@ export default function Dashboard() {
         method: "GET",
       }).catch(() => {
         // Mock response if API doesn't exist
-        return new Response(JSON.stringify({ value: Math.floor(Math.random() * 40) + 60 }))
+        return new Response(JSON.stringify({ value: 0 }))
       })
 
       const data = await response.json()
@@ -77,7 +79,7 @@ export default function Dashboard() {
         method: "GET",
       }).catch(() => {
         // Mock response if API doesn't exist
-        return new Response(JSON.stringify({ value: Math.floor(Math.random() * 5) + 95 }))
+        return new Response(JSON.stringify({ value: 0 }))
       })
 
       const data = await response.json()
@@ -119,18 +121,13 @@ export default function Dashboard() {
     setIsLoadingTemp(true)
     try {
       // Simulate API call
-      const response = await fetch("https://api.example.com/temperature", {
-        method: "GET",
-      }).catch(() => {
-        // Mock response if API doesn't exist
-        return new Response(JSON.stringify({ value: (Math.random() * 1.5 + 36.5).toFixed(1) }))
-      })
-
-      const data = await response.json()
-      const tempValue = data.value.toString()
+      const response = await axios.get(`http://${gunhost}:80/ambient`)
+      console.log("Resp: ", response)
+      // const data = await response.json()
+      const tempValue =   response.data
 
       // Update context
-      setHealthData((prev) => ({
+      setHealthData((prev) => ({  
         ...prev,
         temperature: {
           ...prev.temperature,
@@ -168,7 +165,9 @@ export default function Dashboard() {
 
     // Sort by date (newest first) and get the first entry
     entries.sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
-    return entries[0][1]
+    console.log(dataType, entries);
+    // return entries[0][1];
+    return Object.values(entries[0][1])[0];
   }
 
   return (
