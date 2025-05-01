@@ -10,7 +10,7 @@ import { ChartContainer, ChartTooltip, LineChart } from "@/components/ui/chart"
 import MainNav from "@/components/main-nav"
 
 export default function AnalyticsDashboard() {
-  const { data: session } = useSession()
+  // const { data: session } = useSession()
   const { healthData } = useHealthData()
   const [timeRange, setTimeRange] = useState("7days")
 
@@ -125,44 +125,45 @@ export default function AnalyticsDashboard() {
 
                   <div className="h-[300px]">
                     {prepareChartData("BPM").length > 0 ? (
-                      <ChartContainer>
-                        <LineChart
-                          data={prepareChartData("BPM")}
-                          xAxisKey="date"
-                          series={[
-                            {
-                              key: "value",
-                              label: "BPM",
-                              color: "hsl(346, 84.3%, 60.6%)",
-                            },
-                          ]}
-                          tooltip={
-                            <ChartTooltip
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  return (
-                                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <div className="flex flex-col">
-                                          <span className="text-[0.70rem] uppercase text-muted-foreground">Date</span>
-                                          <span className="font-bold text-muted-foreground">
-                                            {payload[0].payload.date}
-                                          </span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                          <span className="text-[0.70rem] uppercase text-muted-foreground">BPM</span>
-                                          <span className="font-bold">{payload[0].value}</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                                return null
-                              }}
-                            />
-                          }
-                        />
-                      </ChartContainer>
+                      <div>data toh h</div>
+                      // <ChartContainer>
+                      //   <LineChart
+                      //     data={prepareChartData("BPM")}
+                      //     xAxisKey="date"
+                      //     series={[
+                      //       {
+                      //         key: "value",
+                      //         label: "BPM",
+                      //         color: "hsl(346, 84.3%, 60.6%)",
+                      //       },
+                      //     ]}
+                      //     tooltip={
+                      //       <ChartTooltip
+                      //         content={({ active, payload }) => {
+                      //           if (active && payload && payload.length) {
+                      //             return (
+                      //               <div className="rounded-lg border bg-background p-2 shadow-sm">
+                      //                 <div className="grid grid-cols-2 gap-2">
+                      //                   <div className="flex flex-col">
+                      //                     <span className="text-[0.70rem] uppercase text-muted-foreground">Date</span>
+                      //                     <span className="font-bold text-muted-foreground">
+                      //                       {payload[0].payload.date}
+                      //                     </span>
+                      //                   </div>
+                      //                   <div className="flex flex-col">
+                      //                     <span className="text-[0.70rem] uppercase text-muted-foreground">BPM</span>
+                      //                     <span className="font-bold">{payload[0].value}</span>
+                      //                   </div>
+                      //                 </div>
+                      //               </div>
+                      //             )
+                      //           }
+                      //           return null
+                      //         }}
+                      //       />
+                      //     }
+                      //   />
+                      // </ChartContainer>
                     ) : (
                       <div className="flex h-full items-center justify-center">
                         <p className="text-muted-foreground">No BPM data available</p>
@@ -247,6 +248,7 @@ export default function AnalyticsDashboard() {
                           }
                         />
                       </ChartContainer>
+                      // <div>data hai</div>
                     ) : (
                       <div className="flex h-full items-center justify-center">
                         <p className="text-muted-foreground">No SPO2 data available</p>
@@ -293,46 +295,47 @@ export default function AnalyticsDashboard() {
 
                   <div className="h-[300px]">
                     {prepareChartData("temperature").length > 0 ? (
-                      <ChartContainer>
-                        <LineChart
-                          data={prepareChartData("temperature")}
-                          xAxisKey="date"
-                          series={[
-                            {
-                              key: "value",
-                              label: "Temperature",
-                              color: "hsl(43, 96.4%, 58.6%)",
-                            },
-                          ]}
-                          tooltip={
-                            <ChartTooltip
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  return (
-                                    <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <div className="flex flex-col">
-                                          <span className="text-[0.70rem] uppercase text-muted-foreground">Date</span>
-                                          <span className="font-bold text-muted-foreground">
-                                            {payload[0].payload.date}
-                                          </span>
-                                        </div>
-                                        <div className="flex flex-col">
-                                          <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                            Temperature
-                                          </span>
-                                          <span className="font-bold">{payload[0].value}°C</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                                return null
-                              }}
-                            />
-                          }
-                        />
-                      </ChartContainer>
+                      <div className="">data hai</div>
+                      // <ChartContainer>
+                      //   <LineChart
+                      //     data={prepareChartData("temperature")}
+                      //     xAxisKey="date"
+                      //     series={[
+                      //       {
+                      //         key: "value",
+                      //         label: "Temperature",
+                      //         color: "hsl(43, 96.4%, 58.6%)",
+                      //       },
+                      //     ]}
+                      //     tooltip={
+                      //       <ChartTooltip
+                      //         content={({ active, payload }) => {
+                      //           if (active && payload && payload.length) {
+                      //             return (
+                      //               <div className="rounded-lg border bg-background p-2 shadow-sm">
+                      //                 <div className="grid grid-cols-2 gap-2">
+                      //                   <div className="flex flex-col">
+                      //                     <span className="text-[0.70rem] uppercase text-muted-foreground">Date</span>
+                      //                     <span className="font-bold text-muted-foreground">
+                      //                       {payload[0].payload.date}
+                      //                     </span>
+                      //                   </div>
+                      //                   <div className="flex flex-col">
+                      //                     <span className="text-[0.70rem] uppercase text-muted-foreground">
+                      //                       Temperature
+                      //                     </span>
+                      //                     <span className="font-bold">{payload[0].value}°C</span>
+                      //                   </div>
+                      //                 </div>
+                      //               </div>
+                      //             )
+                      //           }
+                      //           return null
+                      //         }}
+                      //       />
+                      //     }
+                      //   />
+                      // </ChartContainer>
                     ) : (
                       <div className="flex h-full items-center justify-center">
                         <p className="text-muted-foreground">No temperature data available</p>

@@ -18,27 +18,20 @@ import axios from "axios"
 export default function Dashboard() {
   const { user } = useAuth()
   const { toast } = useToast()
-  const { healthData, setHealthData } = useHealthData()
+  const { healthData, setHealthData, refresher } = useHealthData()
   const [isLoadingBPM, setIsLoadingBPM] = useState(false)
   const [isLoadingSPO2, setIsLoadingSPO2] = useState(false)
   const [isLoadingTemp, setIsLoadingTemp] = useState(false)
-  const gunhost = "192.168.147.238"
-
+  const gunhost = "192.168.226.238"
+  const kioskhost = "192.168.226.27"
   // Mock API calls
   const fetchBPM = async () => {
     setIsLoadingBPM(true)
     try {
       // Simulate API call
-      const response = await fetch("https://api.example.com/bpm", {
-        method: "GET",
-      }).catch(() => {
-        // Mock response if API doesn't exist
-        return new Response(JSON.stringify({ value: 0 }))
-      })
+      const response = await axios.get(`http://${kioskhost}:80/bpm`)
 
-      const data = await response.json()
-      const bpmValue = data.value.toString()
-
+      const bpmValue = response.data
       // Update context
       setHealthData((prev) => ({
         ...prev,
@@ -55,7 +48,7 @@ export default function Dashboard() {
           [`BPM.${new Date().toISOString()}`]: bpmValue,
         })
       }
-
+      refresher();
       toast({
         title: "BPM Updated",
         description: `Your heart rate is ${bpmValue} BPM`,
@@ -75,15 +68,9 @@ export default function Dashboard() {
     setIsLoadingSPO2(true)
     try {
       // Simulate API call
-      const response = await fetch("https://api.example.com/spo2", {
-        method: "GET",
-      }).catch(() => {
-        // Mock response if API doesn't exist
-        return new Response(JSON.stringify({ value: 0 }))
-      })
+      const response = await axios.get(`http://${kioskhost}:80/spo2`)
 
-      const data = await response.json()
-      const spo2Value = data.value.toString()
+      const spo2Value =   response.data
 
       // Update context
       setHealthData((prev) => ({
@@ -101,7 +88,7 @@ export default function Dashboard() {
           [`SPO2.${new Date().toISOString()}`]: spo2Value,
         })
       }
-
+      refresher();
       toast({
         title: "SPO2 Updated",
         description: `Your oxygen saturation is ${spo2Value}%`,
@@ -142,7 +129,7 @@ export default function Dashboard() {
           [`temperature.${new Date().toISOString()}`]: tempValue,
         })
       }
-
+      refresher();
       toast({
         title: "Temperature Updated",
         description: `Your body temperature is ${tempValue}°C`,
@@ -165,10 +152,10 @@ export default function Dashboard() {
 
     // Sort by date (newest first) and get the first entry
     entries.sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
-    console.log(dataType, entries);
+    console.log("data haiii", dataType, entries);
     // return entries[0][1];
     
-    return "10";
+    return Object.values(entries[0][1])[0];
   }
   console.log("wha data aaagya", (
     Object.entries(healthData.temperature || {})

@@ -16,6 +16,7 @@ type HealthDataType = {
 type HealthDataContextType = {
   healthData: HealthDataType
   setHealthData: React.Dispatch<React.SetStateAction<HealthDataType>>
+  refresher: () => void
 }
 
 const HealthDataContext = createContext<HealthDataContextType | undefined>(undefined)
@@ -28,7 +29,10 @@ export function HealthDataProvider({ children }: { children: React.ReactNode }) 
     temperature: {},
     bioData: {},
   })
-
+  const [refresh, setRefresh] = useState(true);
+  const refresher = () => {
+    setRefresh(!refresh);
+  }
   useEffect(() => {
     const fetchHealthData = async () => {
       if (user?.uid) {
@@ -52,9 +56,9 @@ export function HealthDataProvider({ children }: { children: React.ReactNode }) 
     }
 
     fetchHealthData()
-  }, [user])
+  }, [user, refresh])
 
-  return <HealthDataContext.Provider value={{ healthData, setHealthData }}>{children}</HealthDataContext.Provider>
+  return <HealthDataContext.Provider value={{ healthData, setHealthData, refresher }}>{children}</HealthDataContext.Provider>
 }
 
 export function useHealthData() {
