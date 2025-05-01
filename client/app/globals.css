@@ -56,4 +56,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Required field label styling */
+  label.required::after {
+    content: "*";
+    color: hsl(var(--destructive));
+    margin-left: 0.25rem;
+  }
 }

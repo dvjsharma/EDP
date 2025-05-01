@@ -65,6 +65,18 @@ export default function MainNav() {
                 <span>Health Assistant</span>
               </div>
             </Link>
+            <Link
+              href="/medical"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname === "/records" ? "text-foreground" : "text-foreground/60",
+              )}
+            >
+              <div className="flex items-center gap-1">
+                <MessageSquare className="h-4 w-4" />
+                <span>Medical Records</span>
+              </div>
+            </Link>
           </nav>
         </div>
         <div className="ml-auto flex items-center space-x-4">

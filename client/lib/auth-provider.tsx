@@ -33,15 +33,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user)
-      setLoading(false)
 
-      // Redirect logic
       if (user) {
-        // If user is logged in and trying to access login/signup pages, redirect to dashboard
-        if (pathname === "/login" || pathname === "/signup") {
-          router.push("/")
+        // Check if user has completed medical profile
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid))
+          if (userDoc.exists()) {
+            const userData = userDoc.data()
+            const hasBioData = userData.bioData && Object.keys(userData.bioData).length > 0
+
+            // If user is logged in and trying to access login/signup pages, redirect to dashboard
+            if (pathname === "/login" || pathname === "/signup") {
+              router.push("/")
+            }
+            // If user doesn't have bioData and isn't on the medical page, redirect to medical
+            else if (!hasBioData && pathname !== "/medical") {
+              router.push("/medical")
+            }
+          }
+        } catch (error) {
+          console.error("Error checking user data:", error)
         }
       } else {
         // If user is not logged in and trying to access protected pages, redirect to login
@@ -49,6 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           router.push("/login")
         }
       }
+
+      setLoading(false)
     })
 
     return () => unsubscribe()
@@ -73,9 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           SPO2: {},
           temperature: {},
         })
-      }
 
-      router.push("/")
+        // New user, redirect to medical profile
+        router.push("/medical")
+      } else {
+        // Check if user has bioData
+        const userData = userDoc.data()
+        if (!userData.bioData || Object.keys(userData.bioData).length === 0) {
+          router.push("/medical")
+        } else {
+          router.push("/")
+        }
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error)
       throw error
@@ -88,7 +112,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       await signInWithEmailAndPassword(auth, email, password)
-      router.push("/")
+
+      // Check if user has bioData
+      const userDoc = await getDoc(doc(db, "users", auth.currentUser!.uid))
+      if (userDoc.exists()) {
+        const userData = userDoc.data()
+        if (!userData.bioData || Object.keys(userData.bioData).length === 0) {
+          router.push("/medical")
+        } else {
+          router.push("/")
+        }
+      } else {
+        router.push("/")
+      }
     } catch (error) {
       console.error("Error signing in with email:", error)
       throw error
@@ -103,7 +139,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
-      // Create user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
         name,
         email,
@@ -114,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         temperature: {},
       })
 
-      router.push("/")
+      router.push("/medical")
     } catch (error) {
       console.error("Error signing up with email:", error)
       throw error
