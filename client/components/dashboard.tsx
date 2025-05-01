@@ -167,9 +167,19 @@ export default function Dashboard() {
     entries.sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
     console.log(dataType, entries);
     // return entries[0][1];
-    return Object.values(entries[0][1])[0];
+    
+    return "10";
   }
-
+  console.log("wha data aaagya", (
+    Object.entries(healthData.temperature || {})
+      .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+      .slice(0, 5)
+      .map(([timestamp, value]) => (
+        <div key={timestamp} className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">{new Date(timestamp).toLocaleString()}</div>
+          <div className="font-medium">{value}°C</div>
+        </div>
+  ))));
   return (
     <div className="flex min-h-screen flex-col">
       <MainNav />
@@ -269,7 +279,7 @@ export default function Dashboard() {
                         .map(([timestamp, value]) => (
                           <div key={timestamp} className="flex items-center justify-between">
                             <div className="text-sm text-muted-foreground">{new Date(timestamp).toLocaleString()}</div>
-                            <div className="font-medium">{value} BPM</div>
+                            <div className="font-medium">{Object.values(value)[0]} BPM</div>
                           </div>
                         ))
                     ) : (
@@ -300,13 +310,15 @@ export default function Dashboard() {
                         .slice(0, 5)
                         .map(([timestamp, value]) => (
                           <div key={timestamp} className="flex items-center justify-between">
-                            <div className="text-sm text-muted-foreground">{new Date(timestamp).toLocaleString()}</div>
-                            <div className="font-medium">{value}%</div>
+                            <p className="text-sm text-muted-foreground">{new Date(timestamp).toLocaleString()}</p>
+                            <p className="font-medium">{Object.values(value)[0]}%</p>
                           </div>
                         ))
                     ) : (
                       <p className="text-center text-muted-foreground">No SPO2 data available</p>
                     )}
+                    
+                    
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -333,7 +345,7 @@ export default function Dashboard() {
                         .map(([timestamp, value]) => (
                           <div key={timestamp} className="flex items-center justify-between">
                             <div className="text-sm text-muted-foreground">{new Date(timestamp).toLocaleString()}</div>
-                            <div className="font-medium">{value}°C</div>
+                            <div className="font-medium">{Object.values(value)[0]}°C</div>
                           </div>
                         ))
                     ) : (
