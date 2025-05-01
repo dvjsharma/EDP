@@ -8,7 +8,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  type TooltipProps,
 } from "recharts"
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
 
 type ChartData = {
   date: string
@@ -23,7 +25,7 @@ type LineChartProps = {
     label: string
     color: string
   }[]
-  tooltip?: React.ReactNode
+  tooltip?: (props: TooltipProps<ValueType, NameType>) => React.ReactNode
 }
 
 export const LineChart = ({ data, xAxisKey, series, tooltip }: LineChartProps) => {
@@ -47,6 +49,7 @@ export const ChartContainer = ({ children }: { children: React.ReactNode }) => {
   return <div className="w-full h-full">{children}</div>
 }
 
-export const ChartTooltip = ({ content }: { content: React.ReactNode }) => {
-  return content
+// This component is no longer needed as we're using the tooltip function directly
+export const ChartTooltip = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>
 }
