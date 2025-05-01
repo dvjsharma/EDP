@@ -112,21 +112,29 @@ export default function HealthChatbot() {
         
         Bio data:
         ${
-          Object.entries(healthContext.bioData)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join("\n") || "No bio data available"
+          Object.entries(healthContext.bioData).map(([key, value]) => {
+            if (Array.isArray(value)) {
+              return `${key}: [\n  ${value.map((v) => `"${v}"`).join(",\n  ")}\n]`;
+            } else if (typeof value === "boolean") {
+              return `${key}: ${value ? "true" : "false"}`;
+            } else {
+              return `${key}: ${value}`;
+            }
+          }).join("\n") || "No bio data available"
         }
+
         
         Important guidelines:
-        0. Ignore all 0 readings.
         1. Only provide health information and advice based on the user's data.
         2. Do not make definitive medical diagnoses.
         3. Encourage the user to consult with healthcare professionals for serious concerns.
         4. Be empathetic and supportive.
         5. Keep responses concise and easy to understand.
         6. If you don't have enough information, ask clarifying questions.
+        7. Ignore all 0 health data readings.
       `
       console.log("System prompt:", systemPrompt)
+      console.log("Data message:", healthContext.bioData)
       // Generate response using Gemini
 
       const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "")
