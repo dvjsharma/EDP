@@ -11,8 +11,9 @@ import { Icons } from "@/components/icons"
 import MainNav from "@/components/main-nav"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { generateText } from "ai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 import { useAuth } from "@/lib/auth-provider"
+import ReactMarkdown from "react-markdown"
 
 type Message = {
   role: "user" | "assistant"
@@ -46,18 +47,28 @@ export default function HealthChatbot() {
 
     // Filter and format BPM data
     const bpmData = Object.entries(healthData.BPM || {})
-      .filter(([timestamp]) => new Date(timestamp) >= sevenDaysAgo)
-      .map(([timestamp, value]) => `${new Date(timestamp).toLocaleDateString()}: ${value} BPM`)
+    .filter(([timestamp]) => new Date(timestamp) >= sevenDaysAgo)
+    .map(([timestamp, value]) => {
+      const bpm = Object.values(value)[0]
+      return `${new Date(timestamp).toLocaleString()}: ${bpm} BPM`;
+    });
 
     // Filter and format SPO2 data
     const spo2Data = Object.entries(healthData.SPO2 || {})
       .filter(([timestamp]) => new Date(timestamp) >= sevenDaysAgo)
-      .map(([timestamp, value]) => `${new Date(timestamp).toLocaleDateString()}: ${value}%`)
+      .map(([timestamp, value]) => {
+        const spo2 = Object.values(value)[0];
+        return `${new Date(timestamp).toLocaleString()}: ${spo2}%`;
+      });
 
     // Filter and format temperature data
     const tempData = Object.entries(healthData.temperature || {})
       .filter(([timestamp]) => new Date(timestamp) >= sevenDaysAgo)
-      .map(([timestamp, value]) => `${new Date(timestamp).toLocaleDateString()}: ${value}°C`)
+      .map(([timestamp, value]) => {
+        const temp = Object.values(value)[0];
+        return `${new Date(timestamp).toLocaleString()}: ${temp}°C`;
+      });
+
 
     return {
       bioData: healthData.bioData || {},
@@ -82,6 +93,7 @@ export default function HealthChatbot() {
     try {
       // Prepare health context
       const healthContext = prepareHealthContext()
+      // console.log("Health context:", healthContext)
 
       // Custom system prompt with health data context
       const systemPrompt = `
@@ -106,6 +118,7 @@ export default function HealthChatbot() {
         }
         
         Important guidelines:
+        0. Ignore all 0 readings.
         1. Only provide health information and advice based on the user's data.
         2. Do not make definitive medical diagnoses.
         3. Encourage the user to consult with healthcare professionals for serious concerns.
@@ -113,13 +126,15 @@ export default function HealthChatbot() {
         5. Keep responses concise and easy to understand.
         6. If you don't have enough information, ask clarifying questions.
       `
-
+      console.log("System prompt:", systemPrompt)
       // Generate response using Gemini
-      const { text } = await generateText({
-        model : "gpt-4",
-        system: systemPrompt,
-        prompt: userMessage,
-      })
+
+      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || "")
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+
+      const result = await model.generateContent(systemPrompt + "\nUser: " + userMessage)
+      const response = await result.response
+      const text = response.text()
 
       // Add AI response to chat
       setMessages((prev) => [...prev, { role: "assistant", content: text }])
@@ -172,12 +187,8 @@ export default function HealthChatbot() {
                             <AvatarFallback>AI</AvatarFallback>
                           </Avatar>
                         )}
-                        <div className="text-sm">
-                          {message.content.split("\n").map((line, i) => (
-                            <p key={i} className={i > 0 ? "mt-2" : ""}>
-                              {line}
-                            </p>
-                          ))}
+                        <div className="prose prose-sm dark:prose-invert max-w-none text-sm">
+                          <ReactMarkdown>{message.content}</ReactMarkdown>
                         </div>
                         {message.role === "user" && (
                           <Avatar className="h-8 w-8">
